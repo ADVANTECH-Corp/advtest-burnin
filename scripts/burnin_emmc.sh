@@ -1,129 +1,100 @@
 #!/bin/bash
 
-
-mountpoint=/home/root/advtest/burnin/log
-
-mkdir -p ${mountpoint}/emmc
+ROOT_DIR="$(cd ../; pwd)"
+mountpoint=$ROOT_DIR/burnin/log
+sudo mkdir -p ${mountpoint}/emmc
 testTime=`date +%Y%m%d.%H.%M.%S`
 LOGFILE="${mountpoint}/emmc/${testTime}.txt"
 fifoStr="01234567890abcdefghijklmnopqrstuvwxyz!@#$%^&*()"
 #TMPDIR=`mktemp -d`
 
+format_emmc(){
+	sudo dd if=/dev/zero of=/dev/$1  bs=1M  count=10
+	sudo echo -e "n\np\n1\n2048\n20479\nw" | sudo fdisk /dev/$1
+	sync && sleep 1
+	sudo partprobe /dev/$1p1
+	sudo mkfs.ext4 /dev/$1p1
+}
+
 read_test_res() {
 	#echo "[`date +%Y%m%d.%H.%M.%S`]    $1 $2"
-	echo "[`date +%Y%m%d.%H.%M.%S`]    $1 $2" >> $LOGFILE	
+	echo "[`date +%Y%m%d.%H.%M.%S`]    $1 $2" >> $LOGFILE
 }
-file_RW_test() {
-	declare -i count	
-	count=0	
-	
-	if [[ $3 != "" ]]; then
-		if [[ $2 -eq 0 ]]; then
-			while true							
-			do
-				((count++))	
-				
-				if [[ ! -e "/dev/$1p2" ]]; then			
-					read_test_res "$3($1) : /dev/$1p2 no exist" "Failed (count:$count / infinite)"
-				else
-				
-					path=`mount | grep $1p2 | awk '{print $3}'`
 
-					if [[ $path == "" ]]; then
-						path="/tmp"	
-						TMPDIR=$path/burnin_test_$1
-						mkdir -p $TMPDIR	
-						
-						mount -t ext4 /dev/$1p2 $TMPDIR	 >/dev/null
-						if [ $? -ne 0 ]; then
-							read_test_res "$3($1) : /dev/$1 cannot be mounted correctly" "Failed (count:$count / infinite)"
-						else
-							echo $fifoStr > "$TMPDIR/test.txt"
-							ReadStr=`cat $TMPDIR/test.txt`
-							if [ $fifoStr == $ReadStr ]; then
-								read_test_res "$3($1) : Read/Write" "Pass (count:$count / infinite)"
-							else
-								read_test_res "$3($1) : Read/Write" "Failed (count:$count / infinite)"
-							fi
-						fi
-						umount $TMPDIR >> /dev/null
-						rm -rf $TMPDIR
-					else
-						if [[ $path == "/" ]]; then
-							TMPDIR=burnin_test_$1
-						else
-							TMPDIR=$path/burnin_test_$1
-						fi
-						
-						mkdir -p $TMPDIR >/dev/null			
-						echo $fifoStr > "$TMPDIR/test.txt"
-						ReadStr=`cat $TMPDIR/test.txt`
-						if [ $fifoStr == $ReadStr ]; then
-							read_test_res "$3($1) : Read/Write" "Pass (count:$count / infinite)"
-						else
-							read_test_res "$3($1) : Read/Write" "Failed (count:$count / infinite)"
-						fi
-						rm -rf $TMPDIR
-					fi	
-				fi
-				sleep 2
-				sync
-			done			
-		else			
-			for((i=1;i<=$2;i++)) do
-				((count++))
-				if [[ ! -e "/dev/$1p2" ]]; then			
-					read_test_res "$3($1) : /dev/$1p2 no exist" "Failed (count:$count / $2)"
-				else
-						
-					path=`mount | grep $1p2 | awk '{print $3}'`
-
-					if [[ $path == "" ]]; then
-						path="/tmp"	
-						TMPDIR=$path/burnin_test_$1
-						mkdir -p $TMPDIR	
-						
-						mount -t ext4 /dev/$1p2 $TMPDIR	 >/dev/null
-						if [ $? -ne 0 ]; then
-							read_test_res "$3($1) : /dev/$1 cannot be mounted correctly" "Failed (count:$count / $2)"
-						else
-							echo $fifoStr > "$TMPDIR/test.txt"
-							ReadStr=`cat $TMPDIR/test.txt`
-							if [ $fifoStr == $ReadStr ]; then
-								read_test_res "$3($1) : Read/Write" "Pass (count:$count / $2)"
-							else
-								read_test_res "$3($1) : Read/Write" "Failed (count:$count / $2)"
-							fi
-						fi
-						umount $TMPDIR >> /dev/null
-						rm -rf $TMPDIR
-					else
-						if [[ $path == "/" ]]; then
-							TMPDIR=burnin_test_$1
-						else
-							TMPDIR=$path/burnin_test_$1
-						fi
-						
-						mkdir -p $TMPDIR >/dev/null			
-						echo $fifoStr > "$TMPDIR/test.txt"
-						ReadStr=`cat $TMPDIR/test.txt`
-						if [ $fifoStr == $ReadStr ]; then
-							read_test_res "$3($1) : Read/Write" "Pass (count:$count / $2)"
-						else
-							read_test_res "$3($1) : Read/Write" "Failed (count:$count / $2)"
-						fi
-						rm -rf $TMPDIR
-					fi	
-				fi
-				sleep 2
-				sync
-
-			done
-			echo "Test is completed!!!" >> $LOGFILE
-		fi
-		sync && umount "/dev/$1" &>/dev/null && sync && sleep 1
+rw_test_core() {
+	sudo echo $fifoStr > "$1/test.txt"
+	ReadStr=`sudo cat $1/test.txt`
+	if [ $fifoStr == $ReadStr ]; then
+		read_test_res "$3($1) : Read/Write" "Pass (count:$4 / $5)"
+	else
+		read_test_res "$3($1) : Read/Write" "Failed (count:$4 / $5)"
 	fi
 }
-echo "eMMC Log file : ${LOGFILE}"
-echo "${LOGFILE} \\" >> ./cache.txt
-file_RW_test $1 $2 $3
+# 1:block 2:mount folder 3:current index 4:total count
+file_rw_test_core() {
+	if [[ $4 -eq 0 ]]; then
+		total_count="infinite"
+	else
+		total_count=$4
+	fi
+	if [[ ! -e "/dev/$1p1" ]]; then
+		read_test_res "$2($1) : /dev/$1p1 no exist" "Failed (count:$3 / $total_count)"
+	else
+		path=`mount | grep $1p1 | awk '{print $2}'`
+		if [[ $path == "" ]]; then
+			path="/tmp"
+			TMPDIR=$path/burnin_test_$1
+			sudo mkdir -p $TMPDIR > /dev/null
+			sudo mount -t ext4 /dev/$1p1 $TMPDIR > /dev/null
+			if [ $? -ne 0 ]; then
+				read_test_res "$2($1) : /dev/$1 cannot be mounted correctly" "Failed (count:$3 / $total_count)"
+			else
+				rw_test_core $TMPDIR $1 $2 $3 $total_count
+			fi
+			sudo umount $TMPDIR >> /dev/null
+			sudo rm -rf $TMPDIR
+		else
+			if [[ $path == "/" ]]; then
+				TMPDIR=burnin_test_$1
+			else
+				TMPDIR=$path/burnin_test_$1
+			fi
+			sudo mkdir -p $TMPDIR >/dev/null
+			rw_test_core $TMPDIR $1 $2 $3 $total_count
+			sudo rm -rf $TMPDIR
+		fi
+	fi
+	sleep 2
+	sync
+}
+
+file_RW_test() {
+	declare -i count
+	count=0
+	
+	if [[ $3 == "" ]]; then
+		echo "Test is failed!!!" >> $LOGFILE
+		return 0;
+	fi
+
+	if [[ $2 -eq 0 ]]; then
+		while true
+		do
+			((count++))
+			# 1:block 2:mount folder 3:current index 4:total count
+			file_rw_test_core $1 $3 $count $2
+		done
+	else
+		for((i=1;i<=$2;i++));
+		do
+			((count++))
+			file_rw_test_core $1 $3 $count $2
+		done
+		echo "Test is completed!!!" >> $LOGFILE
+	fi
+	sync && sudo umount "/dev/$1" &>/dev/null && sync && sleep 1
+}
+sudo echo "eMMC Log file : ${LOGFILE}"
+sudo echo "${LOGFILE} \\" >> ./cache.txt
+format_emmc $1
+file_RW_test $1 $2 $3 

@@ -1,12 +1,11 @@
 #!/bin/bash
 
-
-mountpoint=/home/root/advtest/burnin/log
-
+ROOT_DIR="$(cd ../; pwd)"
+mountpoint=$ROOT_DIR/burnin/log
 mkdir -p ${mountpoint}/play_audio
 testTime=`date +%Y%m%d.%H.%M.%S`
 LOGFILE="${mountpoint}/play_audio/${testTime}.txt"
-AUDIO_DIR="/home/root/advtest/burnin/data/audio"
+AUDIO_DIR="/home/root/advtest/data/audio"
 
 play_audio() {
 	declare -i count	
