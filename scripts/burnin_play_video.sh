@@ -7,6 +7,7 @@ testTime=`date +%Y%m%d.%H.%M.%S`
 LOGFILE="${mountpoint}/play_video/${testTime}.txt"
 VIDEO_FILE=$ROOT_DIR/data/video/bbb.mp4
 
+sudo cp /home/linaro/.Xauthority /root/.Xauthority
 export DISPLAY=:0.0
 
 play_video() {

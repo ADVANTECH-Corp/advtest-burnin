@@ -8,6 +8,7 @@ LOGFILE="${mountpoint}/show_pic/${testTime}.txt"
 IMAGES_DIR=$ROOT_DIR/data/image
 Hostname=`cat /etc/hostname`
 
+sudo cp /home/linaro/.Xauthority /root/.Xauthority
 export DISPLAY=:0.0
 
 show_pic() {
