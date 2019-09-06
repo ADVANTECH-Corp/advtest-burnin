@@ -189,7 +189,7 @@ print_menu_main() {
 	echo "(5) 	Stop the current running test processes"
 #	echo "(6)	Edit the WiFi test configuration"
 #	echo "(7)	Edit Ping IP test configuration"
-#	echo "(8)	Run H pattern test"
+	echo "(8)	Run H pattern test"
 	echo "(9)	Dynamic view the log file"
 	echo "(E/e)	exit the main menu"
 	echo "=========================================="
@@ -213,6 +213,8 @@ print_menu_self_defined_dmssa53() {
 	echo "(10)	Get CPU frequency"
 	echo "(11)	Play video to display/speaker"
 	echo "(22)	SATA test"
+	echo "(23)	Front camera"
+	echo "(24)	Back camera"
 	echo "(12)	Check the test items in self-defined test list"
 	echo "(13)	Clear all test items in self-defined test list"
 #	echo "(15)	SPI ROM"
@@ -273,10 +275,10 @@ do_test_self_defined() {
 				pause 'Press any key to continue...'
 				;;
 			3)
-				read -p "eMMC Write/Read times:(0 for infinite loop) " loop
+				read -p "SD Write/Read times:(0 for infinite loop) " loop
 				if [[ $loop == +([0-9]) ]]; then
-					echo "./scripts/burnin_emmc.sh $sddev $loop "eMMC" 2>&1 &" >> ./run/burnin.sh
-					echo "The configuration of the eMMC($sddev) test has been written to the script ./run/burnin.sh"
+					echo "./scripts/burnin_emmc.sh $sddev $loop "SD" 2>&1 &" >> ./run/burnin.sh
+					echo "The configuration of the SD($sddev) test has been written to the script ./run/burnin.sh"
 				else
 					echo "Your input is illegal, please configure this option again"
 				fi 
@@ -570,6 +572,16 @@ do_test_self_defined() {
 				fi
 				pause 'Press any key to continue...'
 				;;
+			23)
+				echo "./scripts/burnin_camera_preview.sh 5 front 2>&1" >> ./run/burnin.sh
+				echo "The configuration of the \"Front camera preview\" has been written to the script ./run/burnin.sh"
+				pause 'Press any key to continue...'
+				;;
+			24)
+				echo "./scripts/burnin_camera_preview.sh 0 back 2>&1" >> ./run/burnin.sh
+				echo "The configuration of the \"Back camera preview\" has been written to the script ./run/burnin.sh"
+				pause 'Press any key to continue...'
+				;;
 			*)
 				;;
 		esac
@@ -715,13 +727,14 @@ do_test() {
 				pause 'Press any key to continue...'
 				;;
 			8)
-				declare -i h_speed
-				declare -i h_delay
+				#declare -i h_speed
+				#declare -i h_delay
 				#read -p "Delay time (usec) : " h_delay
 				#h_delay=$(($h_delay*1000))
-				h_pattern &
-				h_pid=$!
-				trap 'exit_h_pattern' SIGINT
+				#h_pattern &
+				#h_pid=$!
+				#trap 'exit_h_pattern' SIGINT
+				./scripts/burnin_h_pattern.sh
 				;;
 			9)
 				trap 'exit_h_pattern' SIGINT

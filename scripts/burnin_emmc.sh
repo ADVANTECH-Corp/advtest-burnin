@@ -96,5 +96,5 @@ file_RW_test() {
 }
 sudo echo "eMMC Log file : ${LOGFILE}"
 sudo echo "${LOGFILE} \\" >> ./cache.txt
-format_emmc $1
+#format_emmc $1
 file_RW_test $1 $2 $3 
