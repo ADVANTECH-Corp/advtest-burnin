@@ -10,6 +10,8 @@ LOGFILE="${mountpoint}/msr/$1_${testTime}.txt"
 Hostname=`cat /etc/hostname`
 
 do_msr_reader() {
+	rm /lib/libusb-1.0.so
+	ln -s /lib/libusb-1.0.so.0.1.0 /lib/libusb-1.0.so
 	IDTechSDK_Demo &
 	echo "[`date +%Y%m%d.%H.%M.%S`]" >> $LOGFILE
 }
