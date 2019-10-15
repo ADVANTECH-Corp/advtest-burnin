@@ -37,6 +37,20 @@ do
 done
 }
 
+declare -A ssd_content_group
+for i in `ls /sys/bus/scsi/devices/`
+do
+	ssd_content_group[$i]=`ls /sys/bus/scsi/devices/*:0:0:0/block 2>&1`
+done
+
+return_ssd_dev(){
+	for i in "${ssd_content_group[@]}"
+	do
+		echo $i
+	done
+}
+#return_ssd_dev
+
 declare -A udisk_content_group
 declare -A udisk_group
 for i in `ls /sys/bus/usb/devices/`
@@ -96,6 +110,14 @@ udisk_init() {
 		do
 			echo "udisk ${udisk_group[$i]} exist"
 		done
+	fi
+}
+
+check_ssd(){
+	if [[ ${#ssd_content_group[@]} -eq 0 ]]; then
+		ssd_exist=0
+	else
+		ssd_exist=1
 	fi
 }
 
@@ -163,6 +185,7 @@ system_init() {
 	echo "wait ... "
 #	emmc_init $emmcdev 
 	udisk_init
+	check_ssd
 #	log_partition_init mmcblk0
 #	audio_init
 #        enptest=$(ifconfig -a | grep eth[^0] | awk '{print $1}')
@@ -304,11 +327,10 @@ do_test_self_defined() {
 			22)
 				read -p "uDisk Write/Read times:(0 for infinite loop) " loop 
 				if [[ $loop == +([0-9]) ]]; then
-					if [[ "$udisk_exist" == "1" ]]; then
-						for i in "${!udisk_group[@]}"
-						do
-							echo "./scripts/burnin_udisk.sh ${udisk_group[$i]}1 $loop "SATA" 2>&1 &"  >> ./run/burnin.sh
-						done
+					if [[ "$ssd_exist" == "1" ]]; then
+						#echo "./scripts/burnin_udisk.sh ${udisk_group[$i]}1 $loop "SATA" 2>&1 &"  >> ./run/burnin.sh
+						echo "./scripts/burnin_ssd.sh sda $loop "SATA" 2>&1 &" >> ./run/burnin.sh
+						#done
 						echo "The configuration of the uDisk test has been written to the script ./run/burnin.sh"
 					else
 						echo "udisk no exist"

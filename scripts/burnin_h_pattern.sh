@@ -1,6 +1,7 @@
 #! /bin/bash
 
-ROOT_DIR="$(cd ../; pwd)"
+#ROOT_DIR="$(cd ../; pwd)"
+ROOT_DIR=`pwd`
 mountpoint=$ROOT_DIR/burnin/log
 mkdir -p ${mountpoint}/hpattern
 testTime=`date +%Y%m%d.%H.%M.%S`
