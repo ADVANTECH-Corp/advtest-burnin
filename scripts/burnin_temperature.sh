@@ -6,7 +6,8 @@
 #	exit 0
 #fi
 
-mountpoint=/home/root/advtest/burnin/log
+ROOT_DIR=`pwd`
+mountpoint=$ROOT_DIR/burnin/log
 mkdir -p ${mountpoint}/temperature
 testTime=`date +%Y%m%d.%H.%M.%S`
 LOGFILE="${mountpoint}/temperature/${testTime}.txt"

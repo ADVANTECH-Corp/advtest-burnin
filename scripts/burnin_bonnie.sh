@@ -3,7 +3,8 @@
 
 mkdir -p ${mountpoint}/bonnie
 testTime=`date +%Y%m%d.%H.%M.%S`
-mountpoint=/home/root/advtest/burnin/log
+ROOT_DIR=`pwd`
+mountpoint=$ROOT_DIR/burnin/log
 LOGFILE="${mountpoint}/bonnie/${testTime}.txt"
 
 bonnie_test() {
