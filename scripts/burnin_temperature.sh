@@ -1,11 +1,5 @@
 #!/bin/bash
 
-#mountpoint=`mount |grep "/dev/mmcblk0p2" |awk '{print $3}'`
-#if [[ $mountpoint == "" ]]; then
-#	echo "The log partition has not been mounted, exit"
-#	exit 0
-#fi
-
 ROOT_DIR=`pwd`
 mountpoint=$ROOT_DIR/burnin/log
 mkdir -p ${mountpoint}/temperature
@@ -15,29 +9,27 @@ LOGFILE="${mountpoint}/temperature/${testTime}.txt"
 Hostname=`cat /etc/hostname`
 
 get_temperator() {
-		if [[ "$Hostname" == *"imsse01"* || "$Hostname" == *"imx6q-cv1"* || "$Hostname" == *"magmon"* ]]; then
-			SYSTEM_TEMP=`cat /sys/class/thermal/thermal_zone0/temp`
-        elif [[ "$Hostname" == *"dmsse23"* ]]; then
-			SYSTEM_TEMP=`cat /sys/class/thermal/thermal_zone1/temp`
-        fi
+	SOC_TEMP=`cat /sys/class/thermal/thermal_zone0/temp`
+	GPU_TEMP=`cat /sys/class/thermal/thermal_zone1/temp`
+#	BAT_TEMP=`cat /sys/class/thermal/thermal_zone2/temp`
 }
 get_temperature() {
-	declare -i count	
+	declare -i count
 	count=0
 	if [[ $1 -eq 0 ]]; then
 		while true
-		do                                      
-                        ((count++))     
-                        get_temperator                                          
-                        echo "[`date +%Y%m%d.%H.%M.%S`]    temperature: ${SYSTEM_TEMP} (count: $count / infinite)" >> $LOGFILE 
-                        sleep $2                                                
-                done
-	else	
+		do
+			((count++))
+			get_temperator
+			echo "[`date +%Y%m%d.%H.%M.%S`] temperature: SOC:${SOC_TEMP},GPU:${GPU_TEMP},BATTERY:${BAT_TEMP} (count: $count / infinite)" >> $LOGFILE 
+			sleep $2
+		done
+	else
 		for ((i=0; i<$1;i++))
 		do
 			((count++))
 			get_temperator
-                        echo "[`date +%Y%m%d.%H.%M.%S`]    temperature: ${SYSTEM_TEMP} (count: $count / $1)" >> $LOGFILE
+			echo "[`date +%Y%m%d.%H.%M.%S`] temperature: SOC:${SOC_TEMP},GPU:${GPU_TEMP},BATTERY:${BAT_TEMP} (count: $count / $1)" >> $LOGFILE
 			sleep $2
 		done
 		echo "Test is completed!!!" >> $LOGFILE

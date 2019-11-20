@@ -3,7 +3,7 @@
 Ver=0.2.3
 LANG=C
 LANGUAGE="en_US.UTF-8"
-
+BURNIN_HOME=$(dirname $0)
 
 if [ $USER != "root" ]
 then
@@ -11,8 +11,11 @@ then
 	exit
 fi
 
-
+MODEL=dmssa51
 Hostname=`cat /etc/hostname`
+
+
+
 
 declare -A mmc_type_group
 for i in `ls /sys/bus/mmc/devices/`
@@ -20,6 +23,28 @@ do
         mmc_type_group[$i]=`cat /sys/bus/mmc/devices/$i/type`
 
 done
+
+## I hope to move the print_menu_self_defined() here, but temporary keep the original architecture due to schedule
+#print_menu_self_defined() {
+#	
+#	declare -a TEST_SCRIPTS
+#	pushd ./scripts/tmp/ #2>&1 | /dev/null
+#	TEST_SCRIPTS=`find .  -maxdepth 1 -iname "*.sh" | sort`
+#	echo $TEST_SCRIPTS | awk '{
+#	  len=split($TEST_SCRIPTS,arr," ");
+#	  for (i=0;++i <=len;){
+#		  split(arr[i],val,"/");
+#		  split(val[2],val1,"-|\.");
+#		     printf("%d,\"[%02d] %s\",%d-%s.sh \n",val1[1], val1[1],val1[2], val1[1],val1[2]);
+#	 }
+#  }' > /tmp/items
+#
+#  
+#	
+#	popd #2>&1 | /dev/null
+#	
+#}
+
 
 return_emmc_dev() {
         for i in "${!mmc_type_group[@]}"
@@ -30,6 +55,7 @@ return_emmc_dev() {
                 fi
         done
 }
+
 return_sd_dev() {
         for i in "${!mmc_type_group[@]}"
         do
@@ -38,6 +64,7 @@ return_sd_dev() {
                 fi
         done
 }
+
 declare -A udisk_content_group
 declare -A udisk_group
 for i in `ls /sys/bus/usb/devices/`
@@ -153,15 +180,15 @@ EOF
 }
 
 
-if [ -d /home/root/advtest/burnin/log ]; then
-	rm -rf /home/root/advtest/burnin/log/
+if [ -d $BURNIN_HOME/log ]; then
+	rm -rf $BURNIN_HOME/log/
 fi
 
 
 
-echo "Check eMMC partition"
-log_partition_init $emmcdev &>/dev/null
-log_partition_init $sddev &>/dev/null
+#echo "Check eMMC partition"
+#log_partition_init $emmcdev &>/dev/null
+#log_partition_init $sddev &>/dev/null
 
 
 system_init() {
@@ -205,111 +232,6 @@ print_menu_main() {
 	echo "(E/e)	exit the main menu"
 	echo "=========================================="
 }
-print_menu_self_defined_imsse01() {
-	echo 
-	echo -e "\e[39m"
-	echo "Please add test items in self-defined test list"
-	echo "=========================================="	
-	echo "(0)	CPU test"
-	echo "(1)	Memory test"
-	echo "(2)	eMMC test"
-	echo "(3)	SD test"
-	echo "(4)	uDisk test"	
-	echo "(5) 	Ethernet test"	
-	echo "(14) 	Boradr-Reach test"	
-	echo "(6) 	Wifi test"	
-#	echo "(7)	Show picture to LVDS"
-	echo "(8)	Play music to speaker"
-	echo "(9)	Get system temperature"
-	echo "(10)	Get CPU frequency"			
-#	echo "(11)	I2C test"	
-	echo "(11)	Play video to display/speaker"			
-	echo "(15)	SPI ROM"	
-    echo "(16)	H Pattern"		
-	echo "(12)	Check the test items in self-defined test list"
-	echo "(13)	Clear all test items in self-defined test list"
-	echo "(21)	can bus loopback"
-	echo "(E/e)	exit the self-defined test list menu"
-	echo "=========================================="
-}
-print_menu_self_defined_dmsse23() {
-	echo 
-	echo -e "\e[39m"
-	echo "Please add test items in self-defined test list"
-	echo "=========================================="	
-	echo "(0)	CPU test"
-	echo "(1)	Memory test"
-	echo "(2)	eMMC test"
-	echo "(3)	SD test"
-	echo "(4)	uDisk test"	
-	echo "(5) 	Ethernet test"	
-#	echo "(6) 	Wifi test"	
-	echo "(7)	Show picture to LVDS"	
-	echo "(8)	Play music to speaker"
-	echo "(9)	Get system temperature"
-	echo "(10)	Get CPU frequency"			
-#	echo "(11)	I2C test"
-	echo "(11)	Play video to display/speaker"	
-	echo "(15)	SPI ROM"	
-	echo "(16)	H Pattern"	
-	echo "(12)	Check the test items in self-defined test list"
-	echo "(13)	Clear all test items in self-defined test list"
-#	echo "(21)	can bus loopback"
-	echo "(E/e)	exit the self-defined test list menu"
-	echo "=========================================="
-}
-print_menu_self_defined_w105() {
-	echo 
-	echo -e "\e[39m"
-	echo "Please add test items in self-defined test list"
-	echo "=========================================="	
-	echo "(0)	CPU test"
-	echo "(1)	Memory test"
-	echo "(2)	eMMC test"
-	echo "(3)	SD test"
-	echo "(4)	uDisk test"	
-	echo "(5) 	Ethernet test"	
-#	echo "(14) 	Boradr-Reach test"	
-	echo "(6) 	Wifi station test"	
-	echo "(17) 	Wifi ap test"	
-	echo "(7)	Show picture to LVDS"	
-	echo "(8)	Play music to speaker"
-	echo "(18)	Get sensor temperature"
-	echo "(9)	Get system temperature"
-	echo "(10)	Get CPU frequency"			
-#	echo "(11)	I2C test"	
-#	echo "(11)	Play video to display/speaker"			
-#	echo "(15)	SPI ROM"	
-	echo "(16)	H Pattern"		
-	echo "(19)	comport loopback"
-	echo "(20)	IR transmission test"
-	echo "(12)	Check the test items in self-defined test list"
-	echo "(13)	Clear all test items in self-defined test list"
-#	echo "(21)	can bus loopback"
-	echo "(E/e)	exit the self-defined test list menu"
-	echo "=========================================="
-}
-
-print_menu_self_defined_magmon() {
-	echo 
-	echo -e "\e[39m"
-	echo "Please add test items in self-defined test list"
-	echo "=========================================="	
-	echo "(0)	CPU test"
-	echo "(1)	Memory test"
-	echo "(2)	eMMC test"
-	echo "(3)	SD test"
-	echo "(4)	uDisk test"	
-	echo "(5) 	Ethernet test"	
-	echo "(9)	Get system temperature"
-	echo "(10)	Get CPU frequency"			
-	echo "(19)	comport loopback"
-	echo "(12)	Check the test items in self-defined test list"
-	echo "(13)	Clear all test items in self-defined test list"
-#	echo "(21)	can bus loopback"
-	echo "(E/e)	exit the self-defined test list menu"
-	echo "=========================================="
-}
 
 pause() {
         read -n 1 -p "$*" INP
@@ -320,19 +242,23 @@ pause() {
 
 is_correct_config="true"
 is_self_defined_config="true"
+
 do_test_self_defined() {		
 	is_self_defined_config="true"
+#	while [[ $is_self_defined_config == "true" ]];do
+#		if [[ "$Hostname" == *"imsse01"* ]]; then
+#			print_menu_self_defined_imsse01
+#		elif [[ "$Hostname" == *"dmsse23"* ]]; then
+#			print_menu_self_defined_dmsse23
+#		elif [[ "$Hostname" == *"imx6q-cv1"* ]]; then
+#			print_menu_self_defined_w105
+#		elif [[ "$Hostname" == *"magmon"* ]]; then
+#			print_menu_self_defined_magmon
+#		fi
 	while [[ $is_self_defined_config == "true" ]];do
-		if [[ "$Hostname" == *"imsse01"* ]]; then
-			print_menu_self_defined_imsse01
-		elif [[ "$Hostname" == *"dmsse23"* ]]; then
-			print_menu_self_defined_dmsse23
-		elif [[ "$Hostname" == *"imx6q-cv1"* ]]; then
-			print_menu_self_defined_w105
-		elif [[ "$Hostname" == *"magmon"* ]]; then
-			print_menu_self_defined_magmon
-		fi
-		
+	    source ./menu/menu_$MODEL.sh
+	    print_menu_self_defined
+	    
 		read -p "select function : " res
 		case $res in 						
 			0)
@@ -501,8 +427,8 @@ do_test_self_defined() {
 			7)
 				read -p "Show picture times:(0 for infinite loop) " loop
 				if [[ $loop == +([0-9]) ]]; then
-					echo "./scripts/burnin_show_pic_lvds.sh $loop 2>&1 &" >> ./run/burnin.sh
-					echo "The configuration of the \"Show picture to LVDS\" has been written to the script ./run/burnin.sh"
+					echo "./scripts/burnin_show_pic.sh $loop 2>&1 &" >> ./run/burnin.sh
+					echo "The configuration of the \"Show picture\" has been written to the script ./run/burnin.sh"
 				else                                                                    
                 			echo "Your input is illegal, please configure this option again"
         			fi 
@@ -613,13 +539,13 @@ do_test_self_defined() {
 				pause 'Press any key to continue...'
 				;;
 			12)                                                                           
-           			if [[ ! -e "/home/root/advtest/burnin/run/burnin.sh" ]]; then         
+           			if [[ ! -e "$BURNIN_HOME/run/burnin.sh" ]]; then         
                    			echo "There is no test items in self-defined test list, please configure again"
                    			pause 'Press any key to continue...'                                      
            			else
                    			echo "The following is the test items in self-defined test list"
                    			echo ""          
-                   			cat /home/root/advtest/burnin/run/burnin.sh
+                   			cat $BURNIN_HOME/run/burnin.sh
                    			echo ""          
                    			pause 'Press any key to continue...'
            			fi  
@@ -672,13 +598,25 @@ do_test_self_defined() {
 				fi
 				pause 'Press any key to continue...'
 				;;
+				
+			22)
+				read -p "Read ALS value times:(0 for infinite loop) " loop
+				read -p "Reflash time(sec): " als_reflash_time
+				if [[ $loop == +([0-9]) ]] && [[ $als_reflash_time == +([0-9]) ]]; then
+					echo "./scripts/burnin_als.sh $loop $als_reflash_time 2>&1 &" >> ./run/burnin.sh
+					echo "The configuration of the \"Get ALS value\" has been written to the script ./run/burnin.sh" 
+				else                                                                    
+                			echo "Your input is illegal, please configure this option again"
+        			fi
+				pause 'Press any key to continue...'
+				;;					
 			*)
 				;;
 		esac
 	done
 }
 
-do_test() {
+main() {
 	echo 1 > /proc/sys/kernel/printk	
 	system_init 	
 	while true;do
@@ -686,30 +624,30 @@ do_test() {
 		read -p "select function : " res
 		case $res in 
 			1)
-				if [[ ! -e "/home/root/advtest/burnin/run/burnin.sh" ]]; then					
+				if [[ ! -e "$BURNIN_HOME/run/burnin.sh" ]]; then					
 					echo "There is no test items in self-defined test list, please use the following menu to configure "
 					do_test_self_defined
 				else					
 					echo "The following is the test items in self-defined test list" 
         				echo ""                                                                 
-        				cat /home/root/advtest/burnin/run/burnin.sh                              
+        				cat $BURNIN_HOME/run/burnin.sh                              
         				echo ""
 					read -p "Run the self-defined test list using current configuration? (Y/N) " res
 					case $res in 
 						Y|y|"")
-							is_wlan0_config=`cat /home/root/advtest/burnin/run/burnin.sh |grep 'wifi'`
+							is_wlan0_config=`cat $BURNIN_HOME/run/burnin.sh |grep 'wifi'`
 							if [[ $is_wlan0_config == "" ]]; then
 								is_wlan0_config=disable
 							else
 								is_wlan0_config=enable
 							fi
-							is_eth0_config=`cat /home/root/advtest/burnin/run/burnin.sh |grep 'eth0'`
+							is_eth0_config=`cat $BURNIN_HOME/run/burnin.sh |grep 'eth0'`
 							if [[ $is_eth0_config == "" ]]; then
 								is_eth0_config=disable
 							else
 								is_eth0_config=enable
 							fi
-							is_eth1_config=`cat /home/root/advtest/burnin/run/burnin.sh |grep "$enptest"`
+							is_eth1_config=`cat $BURNIN_HOME/run/burnin.sh |grep "$enptest"`
 							if [[ $is_eth1_config == "" ]]; then
 								is_eth1_config=disable
 							else
@@ -739,24 +677,24 @@ do_test() {
 				fi
 				;;				
 			2)                                                                                      
-                   		if [[ ! -e "/home/root/advtest/burnin/run/burnin.sh" ]]; then         
+                   		if [[ ! -e "$BURNIN_HOME/run/burnin.sh" ]]; then         
                    			echo "There is no test items in self-defined test list, please use the following menu to configure"
            			else                                                                 
                    			echo "The following is the test items in self-defined test list currently"
                    			echo ""
-                   			cat /home/root/advtest/burnin/run/burnin.sh                                              
+                   			cat $BURNIN_HOME/run/burnin.sh                                              
                    			echo ""	                                                
            			fi
 				do_test_self_defined                                               
            			;;			
 			3)                                                                           
-           			if [[ ! -e "//home/root/advtest/burnin/run/burnin.sh" ]]; then         
+           			if [[ ! -e "/$BURNIN_HOME/run/burnin.sh" ]]; then         
                    			echo "There is no test items in self-defined test list, please use the following menu to configure"
 					do_test_self_defined
            			else                                                                 
                    			echo "The following is the test items in self-defined test list"
                    			echo ""
-                   			cat /home/root/advtest/burnin/run/burnin.sh                                              
+                   			cat $BURNIN_HOME/run/burnin.sh                                              
                    			echo ""
 					pause 'Press any key to continue...'                                                
            			fi                                                                   
@@ -847,7 +785,12 @@ do_test() {
 	done
 }
 
-do_test $1
+environment_init(){
+	
+	sleep 1
+}
+
+main $@
 
 
 

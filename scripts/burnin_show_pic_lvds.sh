@@ -6,7 +6,7 @@ mountpoint=$ROOT_DIR/burnin/log
 mkdir -p ${mountpoint}/show_pic_lvds
 testTime=`date +%Y%m%d.%H.%M.%S`
 LOGFILE="${mountpoint}/show_pic_lvds/${testTime}.txt"
-IMAGES_DIR="/home/root/advtest/burnin/data/image"
+IMAGES_DIR="$ROOT_DIR/data/image"
 
 LVDS_DEV=fb0
 LVDS_FB="/sys/class/graphics/${LVDS_DEV}"

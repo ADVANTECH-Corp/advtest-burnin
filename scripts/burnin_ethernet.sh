@@ -17,15 +17,15 @@ ethernet_test() {
 	total_fail=0
 	total_pass=0
 	
-	if [[ ! -e "/home/root/advtest/burnin/scripts/burnin_ping_IP_config.sh" ]]; then 
+	if [[ ! -e "$ROOT_DIR/scripts/burnin_ping_IP_config.sh" ]]; then 
 		
 		#WEBSERVER=`ifconfig $1 |grep 'inet addr' |cut -d : -f2 | awk '{print $1}'`
 		HOST_IP=$Google
 		echo "Don't edit Ping IP test configuration in main menu, currently use default $1 ping Google IP \"$HOST_IP\" "  
 		echo "[`date +%Y%m%d.%H.%M.%S`]    use default $1 ping IP \"$HOST_IP\" " >> $LOGFILE
 	else                                                                            
-		HOST_IP=`cat /home/root/advtest/burnin/scripts/burnin_ping_IP_config.sh |grep "$3_IP" |awk 'BEGIN {FS="="} {print $2}'`
-		eth_IP=`cat /home/root/advtest/burnin/scripts/burnin_ping_IP_config.sh |grep "$1_IP" |awk 'BEGIN {FS="="} {print $2}'` 	
+		HOST_IP=`cat $ROOT_DIR/scripts/burnin_ping_IP_config.sh |grep "$3_IP" |awk 'BEGIN {FS="="} {print $2}'`
+		eth_IP=`cat $ROOT_DIR/scripts/burnin_ping_IP_config.sh |grep "$1_IP" |awk 'BEGIN {FS="="} {print $2}'` 	
 
 		echo "Currently use $eth_IP ping IP $HOST_IP that has been configured in ./scripts/burnin_ping_IP_config.sh "
 		echo "[`date +%Y%m%d.%H.%M.%S`]    use $eth_IP ping $HOST_IP" >> $LOGFILE
