@@ -17,10 +17,10 @@ get_frequency() {
 		while true
 		do                                      
                         ((count++))     
-                        for j in 0 1 
+                        for j in 0 1 2 3
 			do
 				get_cpu_cur_freq $j
-				echo "[`date +%Y%m%d.%H.%M.%S`]    CPU $j FREQ: ${CPU_FREQ} (count: $count / infinite)" >> $LOGFILE
+				echo "[`date +%Y%m%d.%H.%M.%S`]    CPU $j FREQ: $((CPU_FREQ/1000000)).$((CPU_FREQ%1000000))GHz (count: $count / infinite)" >> $LOGFILE
 			done
                         sleep $2                                                
                 done
@@ -28,10 +28,10 @@ get_frequency() {
 		for ((i=0; i<$1;i++))
 		do
 			((count++))
-			for j in 0 1                                                           
+			for j in 0 1 2 3                                                  
          		do                                                                     
                  		get_cpu_cur_freq $j                                            
-                 		echo "[`date +%Y%m%d.%H.%M.%S`]    CPU $j FREQ: ${CPU_FREQ} (count: $count / $1)" >> $LOGFILE
+                 		echo "[`date +%Y%m%d.%H.%M.%S`]    CPU $j FREQ: $((CPU_FREQ/1000000)).$((CPU_FREQ%1000000))GHz (count: $count / $1)" >> $LOGFILE
          		done 
 			sleep $2
 		done

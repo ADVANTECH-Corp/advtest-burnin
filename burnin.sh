@@ -331,7 +331,7 @@ do_test_self_defined() {
 				pause 'Press any key to continue...'
 				;;			
 			5)
-				if [[ "$Hostname" == *"imsse01"* ]]; then
+				if [[ "$Hostname" == *"imsse01"*  || "$Hostname" == *"linaro"* ]]; then
 					read -p "Ping ehternet times:(0 for infinite loop) " loop
 					if [[ $loop == +([0-9]) ]]; then
 						read -p "add enp1s0 ethernet test in self-defined test list? (Y/N) " res

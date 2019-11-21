@@ -21,7 +21,7 @@ get_temperature() {
 		do
 			((count++))
 			get_temperator
-			echo "[`date +%Y%m%d.%H.%M.%S`] temperature: SOC:${SOC_TEMP},GPU:${GPU_TEMP},BATTERY:${BAT_TEMP} (count: $count / infinite)" >> $LOGFILE 
+			echo "[`date +%Y%m%d.%H.%M.%S`] temperature: SOC:$((SOC_TEMP/1000)).$((SOC_TEMP%1000))C ,GPU:$((GPU_TEMP/1000)).$((GPU_TEMP%1000))C (count: $count / infinite)" >> $LOGFILE 
 			sleep $2
 		done
 	else
@@ -29,7 +29,7 @@ get_temperature() {
 		do
 			((count++))
 			get_temperator
-			echo "[`date +%Y%m%d.%H.%M.%S`] temperature: SOC:${SOC_TEMP},GPU:${GPU_TEMP},BATTERY:${BAT_TEMP} (count: $count / $1)" >> $LOGFILE
+			echo "[`date +%Y%m%d.%H.%M.%S`] temperature: SOC:$((SOC_TEMP/1000)).$((SOC_TEMP%1000))C ,GPU:$((GPU_TEMP/1000)).$((GPU_TEMP%1000))C (count: $count / $1)" >> $LOGFILE
 			sleep $2
 		done
 		echo "Test is completed!!!" >> $LOGFILE
