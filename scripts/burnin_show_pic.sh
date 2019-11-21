@@ -25,6 +25,10 @@ show_pic() {
 			do
 				echo "[`date +%Y%m%d.%H.%M.%S`]    show picture: ${IMAGES_DIR}/$i (count:$count / infinite)" >> $LOGFILE
 				gpicview ${IMAGES_DIR}/$i & >/dev/null
+				PID=$!
+				sleep 5
+				kill -9 $PID 2>&1 > /dev/null				
+				
 			done
 		done	
 	else 
@@ -36,6 +40,9 @@ show_pic() {
 			do
 				echo "[`date +%Y%m%d.%H.%M.%S`]    show picture: ${IMAGES_DIR}/$i (count:$count / $1)" >> $LOGFILE
 				gpicview ${IMAGES_DIR}/$i & >/dev/null
+				PID=$!
+				sleep 5
+				kill -9 $PID 2>&1 > /dev/null			
 			done
 		done
 		echo "Test is completed!!!" >> $LOGFILE

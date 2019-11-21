@@ -306,7 +306,7 @@ do_test_self_defined() {
 			3)
 				read -p "eMMC Write/Read times:(0 for infinite loop) " loop
 				if [[ $loop == +([0-9]) ]]; then
-					echo "./scripts/burnin_emmc.sh $sddev $loop "eMMC" 2>&1 &" >> ./run/burnin.sh
+					echo "./scripts/burnin_emmc.sh $sddev $loop "SD" 2>&1 &" >> ./run/burnin.sh
 					echo "The configuration of the eMMC($sddev) test has been written to the script ./run/burnin.sh"
 				else                                                                    
                 			echo "Your input is illegal, please configure this option again"
