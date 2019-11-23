@@ -13,7 +13,7 @@ fi
 
 MODEL=dmssa51
 Hostname=`cat /etc/hostname`
-
+source ./menu/menu_$MODEL.sh
 
 
 
@@ -256,7 +256,7 @@ do_test_self_defined() {
 #			print_menu_self_defined_magmon
 #		fi
 	while [[ $is_self_defined_config == "true" ]];do
-	    source ./menu/menu_$MODEL.sh
+	    
 	    print_menu_self_defined
 	    
 		read -p "select function : " res
@@ -658,6 +658,8 @@ main() {
 								if [[ -e "./cache.txt" ]]; then
 									rm ./cache.txt &>/dev/null
 								fi
+								#disable screensaver
+								prepare_test
 								touch ./cache.txt &>/dev/null
 								chmod 777 ./run/burnin.sh                                         
               							./run/burnin.sh                                                   

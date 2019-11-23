@@ -1,4 +1,21 @@
-print_menu_self_defined() {
+function prepare_test()
+{
+	#run task manager
+	su - linaro -c "DISPLAY=:0.0 lxtask" &
+
+	su - linaro -c "DISPLAY=:0.0 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled --create -t bool -s true"
+	su - linaro -c "DISPLAY=:0.0 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-on-ac-off --create -t int -s 0"
+	su - linaro -c "DISPLAY=:0.0 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-on-ac-sleep --create -t int -s 0"
+	su - linaro -c "DISPLAY=:0.0 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac --create -t int -s 0"
+	su - linaro -c "DISPLAY=:0.0 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/brightness-switch --create -t int -s 0"
+	
+	sleep 2
+	WID=`su - linaro -c "DISPLAY=:0.0 xdotool search -onlyvisible -name \"Task Manager\""`
+	su - linaro -c "DISPLAY=:0.0 xdotool windowmove $WID 100 10"
+}
+
+function print_menu_self_defined() 
+{
 	echo 
 	echo -e "\e[39m"
 	echo "Test item list for "$MODEL
