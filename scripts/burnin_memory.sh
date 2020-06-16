@@ -1,29 +1,37 @@
 #!/bin/bash
-
-
-mountpoint=/home/root/advtest/burnin/log
+ROOT_DIR=`pwd`
+mountpoint=$ROOT_DIR/log
 mkdir -p ${mountpoint}/memory
 testTime=`date +%Y%m%d.%H.%M.%S`
 LOGFILE="${mountpoint}/memory/${testTime}.txt"
 RAMDISK="/tmp"
 fifoStr="01234567890abcdefghijklmnopqrstuvwxyz!@#$%^&*()"
 
-
 read_test_res() {
 	#echo "[`date +%Y%m%d.%H.%M.%S`]    $1 $2"
-	echo "[`date +%Y%m%d.%H.%M.%S`]    $1 $2" >> $LOGFILE	
+	echo "[`date +%Y%m%d.%H.%M.%S`]    $1 $2" >> $LOGFILE
 }
+
+kill_test_port() {
+	pidofcat=`ps | grep "stress-ng" | head -n 1 | awk '{print $1}'`
+	if [ ! -z "$pidofcat" -a "$pidofcat" != " " ]; then
+			kill -9 $pidofcat &>/dev/null
+			ps &>/dev/null
+	fi
+}
+
 memory_test() {	
-	declare -i count	
+	declare -i count
 	count=0
+	kill_test_port
 	if [[ $1 -eq 0 ]]; then
-		while true				
+		while true
 		do
 			((count++))
 			echo $fifoStr > "$RAMDISK/$i.txt"
 			#printf "%s" "W" && sleep 1
-			sleep 1			
-			ReadStr=`cat $RAMDISK/$i.txt`			
+			sleep 1
+			ReadStr=`cat $RAMDISK/$i.txt`
 			#printf "\b%s" "R" && sleep 1
 			sleep 1
 			if [ ${fifoStr} == ${ReadStr} ]; then
@@ -34,15 +42,15 @@ memory_test() {
 				read_test_res "Memory : Read/Write" "Failed (count:$count / infinite)"
 			fi
 			sleep 1
-		done		
-	else	
-		for ((i=0;i<$1;i++))				
+		done
+	else
+		for ((i=0;i<$1;i++))
 		do
 			((count++))
 			echo $fifoStr > "$RAMDISK/$i.txt"
 			#printf "%s" "W" && sleep 1
-			sleep 1			
-			ReadStr=`cat $RAMDISK/$i.txt`			
+			sleep 1
+			ReadStr=`cat $RAMDISK/$i.txt`
 			#printf "\b%s" "R" && sleep 1
 			sleep 1
 			if [ ${fifoStr} == ${ReadStr} ]; then

@@ -1,11 +1,17 @@
 #!/bin/bash
 
+#mkdir -p ${PWD}/log/bonnie
+#testTime=`date +%Y%m%d.%H.%M`
+#LOGFILE="${PWD}/log/bonnie/${testTime}.txt"
 
+mountpoint=`mount |grep "/dev/mmcblk2p1" |awk '{print $3}'`
+if [[ $mountpoint == "" ]]; then
+	echo "The log partition has not been mounted, exit"
+	exit 0
+fi
 mkdir -p ${mountpoint}/bonnie
 testTime=`date +%Y%m%d.%H.%M.%S`
-mountpoint=/home/root/advtest/burnin/log
 LOGFILE="${mountpoint}/bonnie/${testTime}.txt"
-
 bonnie_test() {
 	declare -i count	
 	count=0	

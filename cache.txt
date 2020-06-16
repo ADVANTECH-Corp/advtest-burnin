@@ -1,0 +1,1 @@
+/home/root/advtest/log/i2c/20191217.18.51.07.txt \

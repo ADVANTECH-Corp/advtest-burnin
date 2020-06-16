@@ -1,24 +1,13 @@
 #!/bin/bash
 
-#mountpoint=`mount |grep "/dev/mmcblk0p2" |awk '{print $3}'`
-#if [[ $mountpoint == "" ]]; then
-#	echo "The log partition has not been mounted, exit"
-#	exit 0
-#fi
-
-mountpoint=/home/root/advtest/burnin/log
+ROOT_DIR=`pwd`
+mountpoint=$ROOT_DIR/log
 mkdir -p ${mountpoint}/temperature
 testTime=`date +%Y%m%d.%H.%M.%S`
 LOGFILE="${mountpoint}/temperature/${testTime}.txt"
 
-Hostname=`cat /etc/hostname`
-
 get_temperator() {
-		if [[ "$Hostname" == *"imsse01"* || "$Hostname" == *"imx6q-cv1"* || "$Hostname" == *"magmon"* ]]; then
-			SYSTEM_TEMP=`cat /sys/class/thermal/thermal_zone0/temp`
-        elif [[ "$Hostname" == *"dmsse23"* ]]; then
-			SYSTEM_TEMP=`cat /sys/class/thermal/thermal_zone1/temp`
-        fi
+	SYSTEM_TEMP=`cat /sys/class/thermal/thermal_zone0/temp`
 }
 get_temperature() {
 	declare -i count	
